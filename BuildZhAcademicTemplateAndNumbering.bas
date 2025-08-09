@@ -35,19 +35,21 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .SpaceAfter = 0
     End With
 
-    ' 标题1：黑体 三号，加粗，单倍，段前12 段后6，与下段同页
+    ' 标题1：黑体 三号，加粗，单倍，段前12 段后6，与下段同页（居中且不编号）
     Set s = doc.Styles(wdStyleHeading1)
     With s.Font
         .NameFarEast = "黑体"
         .NameAscii = "Arial"
         .Bold = True
         .Size = 16
+        .Color = wdColorBlack
     End With
     With s.ParagraphFormat
         .LineSpacingRule = wdLineSpaceSingle
         .SpaceBefore = 12
         .SpaceAfter = 6
         .KeepWithNext = True
+        .Alignment = wdAlignParagraphCenter
     End With
 
     ' 标题2：黑体 小三
@@ -57,6 +59,7 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .NameAscii = "Arial"
         .Bold = True
         .Size = 15
+        .Color = wdColorBlack
     End With
     With s.ParagraphFormat
         .LineSpacingRule = wdLineSpaceSingle
@@ -72,6 +75,7 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .NameAscii = "Arial"
         .Bold = True
         .Size = 14
+        .Color = wdColorBlack
     End With
     With s.ParagraphFormat
         .LineSpacingRule = wdLineSpaceSingle
@@ -86,8 +90,8 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
     If s Is Nothing Then Set s = doc.Styles.Add(Name:="Code", Type:=wdStyleTypeParagraph)
     On Error GoTo 0
     With s.Font
-        .Name = "Consolas"
-        .Size = 10
+        .Name = "Times New Roman"
+        .Size = 9
     End With
     With s.ParagraphFormat
         .LineSpacingRule = wdLineSpaceSingle
@@ -98,7 +102,7 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .Borders(wdBorderLeft).Color = wdColorGray25
     End With
     With s.ParagraphFormat.Shading
-        .BackgroundPatternColorIndex = wdGray25
+        .BackgroundPatternColor = RGB(200, 200, 200)
     End With
 
     ' 代码：Code Block 样式（Pandoc 兼容名）
@@ -107,8 +111,8 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
     If s Is Nothing Then Set s = doc.Styles.Add(Name:="Code Block", Type:=wdStyleTypeParagraph)
     On Error GoTo 0
     With s.Font
-        .Name = "Consolas"
-        .Size = 10
+        .Name = "Times New Roman"
+        .Size = 9
     End With
     With s.ParagraphFormat
         .LineSpacingRule = wdLineSpaceSingle
@@ -119,7 +123,7 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .Borders(wdBorderLeft).Color = wdColorGray25
     End With
     With s.ParagraphFormat.Shading
-        .BackgroundPatternColorIndex = wdGray25
+        .BackgroundPatternColor = RGB(200, 200, 200)
     End With
 
     ' 图表题：Caption 样式
@@ -171,9 +175,10 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
     ftr.Range.ParagraphFormat.Alignment = wdAlignParagraphCenter
     ftr.Range.Fields.Add Range:=ftr.Range, Type:=wdFieldPage
 
-    ' 多级自动编号：标题1/2/3 → 1、1.1、1.1.1
-    Set lt = doc.ListTemplates.Add(OutlineNumbered:=True, Name:="CN-标题s")
+    ' 多级自动编号：从标题2开始编号（标题1不编号）
+    Set lt = doc.ListTemplates.Add(OutlineNumbered:=True, Name:="CN-标题-从标题2")
 
+    ' 级别1 → 标题2：1, 2, 3, ...
     With lt.ListLevels(1)
         .NumberFormat = "%1"
         .TrailingCharacter = wdTrailingSpace
@@ -184,9 +189,10 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .TabPosition = wdUndefined
         .ResetOnHigher = 0
         .StartAt = 1
-        .LinkedStyle = "标题 1"
+        .LinkedStyle = "标题 2"
     End With
 
+    ' 级别2 → 标题3：1.1, 1.2, ...
     With lt.ListLevels(2)
         .NumberFormat = "%1.%2"
         .TrailingCharacter = wdTrailingSpace
@@ -197,25 +203,16 @@ Sub BuildZhAcademicTemplateAndNumbering_Compat()
         .TabPosition = wdUndefined
         .ResetOnHigher = 1
         .StartAt = 1
-        .LinkedStyle = "标题 2"
-    End With
-
-    With lt.ListLevels(3)
-        .NumberFormat = "%1.%2.%3"
-        .TrailingCharacter = wdTrailingSpace
-        .NumberStyle = wdListNumberStyleArabic
-        .NumberPosition = CentimetersToPoints(0)
-        .Alignment = wdListLevelAlignLeft
-        .TextPosition = CentimetersToPoints(2.22)
-        .TabPosition = wdUndefined
-        .ResetOnHigher = 2
-        .StartAt = 1
         .LinkedStyle = "标题 3"
     End With
 
-    doc.Styles(wdStyleHeading1).LinkToListTemplate lt, 1
-    doc.Styles(wdStyleHeading2).LinkToListTemplate lt, 2
-    doc.Styles(wdStyleHeading3).LinkToListTemplate lt, 3
+    ' 取消“标题1”的编号链接，确保不编号
+    On Error Resume Next
+    doc.Styles(wdStyleHeading1).LinkToListTemplate Nothing, 1
+    On Error GoTo 0
+    ' 将“标题2/标题3”链接到编号级别 1/2
+    doc.Styles(wdStyleHeading2).LinkToListTemplate lt, 1
+    doc.Styles(wdStyleHeading3).LinkToListTemplate lt, 2
 
     ' 保存为模板（docx 参考模板）——兼容 Word（无 GetSaveAsFilename）
     Dim savePath As String
