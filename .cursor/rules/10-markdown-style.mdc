@@ -24,7 +24,7 @@ description: Markdown 写作与排版规范（中文）
 
 - 行内命令或文件名使用反引号：`pip install numpy`、`1.md`。
 - 代码块标注语言：
-  - Shell/PowerShell：```bash ... ```（Windows 下命令也统一用 `bash` 高亮，示例可注明 PowerShell）。
+  - Shell/cmd：```bat ... ```（Windows 下命令统一用 `bat` 高亮，示例注明 cmd）。
   - Python：```python ... ```。
   - 其他纯文本：```text ... ```。
 - 一段代码只做一件事，前置一句话说明“做什么/为什么”。

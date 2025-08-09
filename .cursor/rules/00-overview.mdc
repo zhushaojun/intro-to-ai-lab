@@ -35,5 +35,5 @@ description: 项目结构、受众与总体写作规范，用于《人工智能�
 
 ## 兼容性
 
-- 面向 Windows 10 与 PowerShell 的操作示例优先提供，同时兼顾跨平台命令（如 Python 环境）。
+- 面向 Windows 10 与 cmd 的操作示例优先提供，同时兼顾跨平台命令（如 Python 环境）。
 
