@@ -1,0 +1,47 @@
+---
+globs: *.md
+description: Windows 10 + PowerShell 命令与环境规范
+---
+
+## 环境约定
+
+- 操作系统：Windows 10（优先给出 PowerShell 示例）
+- 终端：PowerShell（必要时注明“以管理员身份运行”）
+- Python：建议 3.10 或以上
+
+## 命令书写
+
+- 统一使用代码块并标注语言为 `bash` 以获得高亮：
+
+```bash
+# PowerShell 示例（以注释说明）
+python --version
+```
+
+- 如命令仅适用于 PowerShell，请在上一行说明。
+- 文件/目录使用反引号包裹：如 `D:\Projects\AI-Intro`、`1.assets/`。
+
+## 常用操作示例
+
+```bash
+# 创建与激活虚拟环境（PowerShell）
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 查看环境变量
+$env:Path
+```
+
+## 常见问题
+
+- 若执行脚本提示权限限制，运行：
+
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+- 使用管理员权限运行 PowerShell 后重试；或在命令前加说明避免误操作。
+
